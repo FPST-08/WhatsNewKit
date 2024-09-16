@@ -86,7 +86,10 @@ extension App: WhatsNewCollectionProvider {
             secondaryAction: .init(
                 title: "Learn more",
                 action: .openURL(.init(string: "https://github.com/SvenTiigi/WhatsNewKit"))
-            )
+            ),
+            migration: {
+                print("Hi")
+            }
         )
     }
     

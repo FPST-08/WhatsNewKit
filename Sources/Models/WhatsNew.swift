@@ -22,6 +22,9 @@ public struct WhatsNew {
     /// The optional SecondaryAction
     public var secondaryAction: SecondaryAction?
     
+    
+    public var migration: (() async -> Void)?
+    
     // MARK: Initializer
     
     /// Creates a new instance of `WhatsNew`
@@ -36,7 +39,8 @@ public struct WhatsNew {
         title: Title,
         features: [Feature],
         primaryAction: PrimaryAction = .init(),
-        secondaryAction: SecondaryAction? = nil
+        secondaryAction: SecondaryAction? = nil,
+        migration: (() async -> Void)? = nil
     ) {
         self.version = version
         self.title = title

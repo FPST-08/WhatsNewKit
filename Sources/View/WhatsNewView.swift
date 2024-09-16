@@ -16,6 +16,12 @@ public struct WhatsNewView {
     /// The WhatsNew Layout
     private let layout: WhatsNew.Layout
     
+    @State private var migrationStatus: MigrationStatus = .notStarted
+    
+    @State private var remainingMigrationSteps = 0
+    
+    @State private var continueButtonPressed = false
+    
     /// The View that is presented by the SecondaryAction
     @State
     private var secondaryActionPresentedView: WhatsNew.SecondaryAction.Action.PresentedView?
@@ -23,6 +29,10 @@ public struct WhatsNewView {
     /// The PresentationMode
     @Environment(\.presentationMode)
     private var presentationMode
+    
+    
+    @Environment(\.whatsNew)
+    private var whatsNewEnvironment
     
     // MARK: Initializer
     
@@ -113,6 +123,38 @@ extension WhatsNewView: View {
             self.whatsNewVersionStore?.save(
                 presentedVersion: self.whatsNew.version
             )
+        }
+        .task {
+            self.migrationStatus = .running
+            guard let whatsNewVersionStore else {
+                return
+            }
+            
+            let versions = whatsNewEnvironment.whatsNewCollection
+            
+            
+            
+            for version in versions {
+                if !whatsNewVersionStore.hasPresented(version) {
+                    if let _ = version.migration {
+                        remainingMigrationSteps += 1
+                    }
+                }
+            }
+            
+            for version in versions {
+                if !whatsNewVersionStore.hasPresented(version) {
+                    if let migration = version.migration {
+                        await migration()
+                        remainingMigrationSteps -= 1
+                    }
+                }
+            }
+            self.migrationStatus = .finished
+            if continueButtonPressed {
+                self.presentationMode.wrappedValue.dismiss()
+            }
+            
         }
     }
     
@@ -215,17 +257,29 @@ private extension WhatsNewView {
             // Primary Action Button
             Button(
                 action: {
-                    // Invoke HapticFeedback, if available
-                    self.whatsNew.primaryAction.hapticFeedback?()
-                    // Dismiss
-                    self.presentationMode.wrappedValue.dismiss()
-                    // Invoke on dismiss, if available
-                    self.whatsNew.primaryAction.onDismiss?()
+                    self.continueButtonPressed = true
+                    if migrationStatus == .finished {
+                        // Invoke HapticFeedback, if available
+                        self.whatsNew.primaryAction.hapticFeedback?()
+                        // Dismiss
+                        self.presentationMode.wrappedValue.dismiss()
+                        // Invoke on dismiss, if available
+                        self.whatsNew.primaryAction.onDismiss?()
+                    }
+                    
+                    
                 }
             ) {
-                Text(
-                    whatsNewText: self.whatsNew.primaryAction.title
-                )
+                if continueButtonPressed {
+                    Text(
+                        whatsNewText: self.whatsNew.primaryAction.title
+                    )
+                } else {
+                    HStack {
+                        ProgressView()
+                        Text("\(remainingMigrationSteps) verbleibend")
+                    }
+                }
             }
             .buttonStyle(
                 PrimaryButtonStyle(
@@ -233,10 +287,16 @@ private extension WhatsNewView {
                     layout: self.layout
                 )
             )
+            .disabled(continueButtonPressed)
             #if os(macOS)
             .keyboardShortcut(.defaultAction)
             #endif
         }
     }
     
+}
+
+
+enum MigrationStatus {
+    case running, finished, notStarted
 }
