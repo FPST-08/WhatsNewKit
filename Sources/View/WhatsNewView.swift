@@ -1,4 +1,5 @@
 import SwiftUI
+import OSLog
 
 // MARK: - WhatsNewView
 
@@ -128,9 +129,15 @@ extension WhatsNewView: View {
             // Set migration status to running
             self.migrationStatus = .running
             
+            if whatsNewEnvironment.whatsNewVersionStore.presentedVersions.isEmpty && whatsNewEnvironment.initialBehaviour == .custom {
+                self.migrationStatus = .finished
+                self.whatsNewVersionStore?.save(presentedVersion: .current())
+                return
+            }
+            
             // Version store is required to check for versions
             guard let whatsNewVersionStore else {
-                print("No version store")
+                Logger(subsystem: Bundle.main.bundleIdentifier!, category: "WhatsNew").error("Version store not found")
                 return
             }
             

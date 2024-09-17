@@ -1,4 +1,5 @@
 import Foundation
+import OSLog
 
 // MARK: - WhatsNewEnvironment
 
@@ -19,6 +20,10 @@ open class WhatsNewEnvironment {
     /// The WhatsNewCollection
     public let whatsNewCollection: WhatsNewCollection
     
+    
+    // The initial behaviour after a first install
+    public let initialBehaviour: InitialSheetBehaviour
+    
     // MARK: Initializer
     
     /// Creates a new instance of `WhatsNewEnvironment`
@@ -27,16 +32,19 @@ open class WhatsNewEnvironment {
     ///   - versionStore: The WhatsNewVersionStore. Default value `UserDefaultsWhatsNewVersionStore()`
     ///   - defaultLayout: The default WhatsNew Layout. Default value `.default`
     ///   - whatsNewCollection: The WhatsNewCollection
+    ///   - initialBehaviour: The initial behaviour after a first install
     public init(
         currentVersion: WhatsNew.Version = .current(),
         versionStore: WhatsNewVersionStore = UserDefaultsWhatsNewVersionStore(),
         defaultLayout: WhatsNew.Layout = .default,
-        whatsNewCollection: WhatsNewCollection = .init()
+        whatsNewCollection: WhatsNewCollection = .init(),
+        initialBehaviour: InitialSheetBehaviour = .regular
     ) {
         self.currentVersion = currentVersion
         self.whatsNewVersionStore = versionStore
         self.defaultLayout = defaultLayout
         self.whatsNewCollection = whatsNewCollection
+        self.initialBehaviour = initialBehaviour
     }
     
     /// Creates a new instance of `WhatsNewEnvironment`
@@ -91,6 +99,19 @@ open class WhatsNewEnvironment {
             // Otherwise WhatsNew has already been presented for the current version
             return nil
         }
+        
+        if initialBehaviour == .hidden && presentedWhatsNewVersions.isEmpty {
+            self.whatsNewVersionStore.save(presentedVersion: currentVersion)
+            return nil
+        } else if initialBehaviour == .custom && presentedWhatsNewVersions.isEmpty {
+            if let initialWhatsNew = whatsNewCollection.first(where: { $0.version.description == "0.0.0"}) {
+                return initialWhatsNew
+            } else {
+                Logger(subsystem: Bundle.main.bundleIdentifier!, category: "WhatsNew").error("InitialBehaviour was set to .custom but no version 0.0.0 was found. Behaviour will fall back to regular")
+            }
+        }
+        
+        
         // Check if a WhatsNew is available for the current Version
         if let whatsNew = self.whatsNewCollection.first(where: { $0.version == self.currentVersion }) {
             // Return WhatsNew for the current Version
@@ -111,4 +132,12 @@ open class WhatsNewEnvironment {
         return self.whatsNewCollection.first { $0.version == currentMinorVersion }
     }
     
+}
+
+
+
+
+
+public enum InitialSheetBehaviour {
+    case hidden, custom, regular
 }
