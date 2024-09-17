@@ -22,7 +22,7 @@ public struct WhatsNew {
     /// The optional SecondaryAction
     public var secondaryAction: SecondaryAction?
     
-    
+    /// The code block that is run when migrating to that version
     public var migration: (() async -> Void)?
     
     // MARK: Initializer
@@ -34,6 +34,7 @@ public struct WhatsNew {
     ///   - items: The Features
     ///   - primaryAction: The PrimaryAction. Default value `.init()`
     ///   - secondaryAction: The optional SecondaryAction. Default value `nil`
+    ///   - migration: The code block that is run when migrating to that version
     public init(
         version: Version = .current(),
         title: Title,
@@ -47,6 +48,7 @@ public struct WhatsNew {
         self.features = features
         self.primaryAction = primaryAction
         self.secondaryAction = secondaryAction
+        self.migration = migration
     }
     
 }

@@ -13,6 +13,8 @@ extension WhatsNewView {
         /// The WhatsNew Layout
         let layout: WhatsNew.Layout
         
+        let loading: Bool
+        
     }
     
 }
@@ -44,8 +46,9 @@ extension WhatsNewView.PrimaryButtonStyle: ButtonStyle {
             #endif
         }
         .foregroundColor(self.primaryAction.foregroundColor)
-        .background(self.primaryAction.backgroundColor)
+        .background(loading ? .gray : self.primaryAction.backgroundColor)
         .cornerRadius(self.layout.footerPrimaryActionButtonCornerRadius)
+        .opacity(loading || configuration.isPressed ? 0.5 : 1)
         .opacity(configuration.isPressed ? 0.5 : 1)
     }
     

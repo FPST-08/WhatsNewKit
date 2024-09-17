@@ -125,37 +125,39 @@ extension WhatsNewView: View {
             )
         }
         .task {
+            // Set migration status to running
             self.migrationStatus = .running
+            
+            // Version store is required to check for versions
             guard let whatsNewVersionStore else {
+                print("No version store")
                 return
             }
             
             let versions = whatsNewEnvironment.whatsNewCollection
             
-            
-            
+            // Iterate over all versions
             for version in versions {
+                // If version has not been shown before
                 if !whatsNewVersionStore.hasPresented(version) {
-                    if let _ = version.migration {
-                        remainingMigrationSteps += 1
-                    }
-                }
-            }
-            
-            for version in versions {
-                if !whatsNewVersionStore.hasPresented(version) {
+                    // If Migration was provided
                     if let migration = version.migration {
+                        // Perform migration
                         await migration()
-                        remainingMigrationSteps -= 1
                     }
                 }
             }
+            
             self.migrationStatus = .finished
+            // If button was previously pressed
             if continueButtonPressed {
+                // Close the sheet
                 self.presentationMode.wrappedValue.dismiss()
             }
             
         }
+        // Disable swipe down while migration is running
+        .interactiveDismissDisabled(migrationStatus != .finished)
     }
     
 }
@@ -271,20 +273,19 @@ private extension WhatsNewView {
                 }
             ) {
                 if continueButtonPressed {
+                    // Show progressview if migration is running and button was pressed
+                    ProgressView()
+                } else {
                     Text(
                         whatsNewText: self.whatsNew.primaryAction.title
                     )
-                } else {
-                    HStack {
-                        ProgressView()
-                        Text("\(remainingMigrationSteps) verbleibend")
-                    }
                 }
             }
             .buttonStyle(
                 PrimaryButtonStyle(
                     primaryAction: self.whatsNew.primaryAction,
-                    layout: self.layout
+                    layout: self.layout,
+                    loading: migrationStatus == .running && continueButtonPressed // Visually indicate running migration after button press
                 )
             )
             .disabled(continueButtonPressed)
