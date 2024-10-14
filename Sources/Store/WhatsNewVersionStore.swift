@@ -33,7 +33,7 @@ public protocol ReadableWhatsNewVersionStore {
 public extension ReadableWhatsNewVersionStore {
     
     /// Retrieve a bool value if a given WhatsNew Version has already been presented
-    /// - Parameter whatsNew: The WhatsNew Version to verify
+    ///- Parameter version: The version to check against
     /// - Returns: A Bool value if the given WhatsNew Version has already been preseted
     func hasPresented(
         _ version: WhatsNew.Version

@@ -35,6 +35,9 @@ public struct WhatsNewView {
     @Environment(\.whatsNew)
     private var whatsNewEnvironment
     
+    /// The action to run when presented
+    let action: (() -> Void)?
+    
     // MARK: Initializer
     
     /// Creates a new instance of `WhatsNewView`
@@ -42,14 +45,17 @@ public struct WhatsNewView {
     ///   - whatsNew: The WhatsNew object
     ///   - versionStore: The optional WhatsNewVersionStore. Default value `nil`
     ///   - layout: The WhatsNew Layout. Default value `.default`
+    ///  - action: The action to run when presented
     public init(
         whatsNew: WhatsNew,
         versionStore: WhatsNewVersionStore? = nil,
-        layout: WhatsNew.Layout = .default
+        layout: WhatsNew.Layout = .default,
+        action: (() -> Void)? = nil
     ) {
         self.whatsNew = whatsNew
         self.whatsNewVersionStore = versionStore
         self.layout = layout
+        self.action = action
     }
     
 }
@@ -104,14 +110,6 @@ extension WhatsNewView: View {
                 Spacer()
                 self.footer
                     .modifier(FooterPadding())
-                    #if os(iOS)
-                    .background(
-                        UIVisualEffectView
-                            .Representable()
-                            .edgesIgnoringSafeArea(.horizontal)
-                            .padding(self.layout.footerVisualEffectViewPadding)
-                    )
-                    #endif
             }
             .edgesIgnoringSafeArea(.bottom)
         }
@@ -266,6 +264,9 @@ private extension WhatsNewView {
             // Primary Action Button
             Button(
                 action: {
+                    if let action {
+                        action()
+                    }
                     self.continueButtonPressed = true
                     if migrationStatus == .finished {
                         // Invoke HapticFeedback, if available

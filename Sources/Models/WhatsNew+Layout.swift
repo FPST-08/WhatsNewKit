@@ -60,6 +60,7 @@ public extension WhatsNew {
         ///   - featureListPadding: The feature list padding. Default value `leading: 15`
         ///   - featureImageWidth: The feature image width. Default value `40`
         ///   - featureHorizontalSpacing: The feature horizontal spacing. Default value `15`
+        ///   - featureHorizontalAlignment: The fature horizontal alignment. Default value `.center`
         ///   - featureVerticalSpacing: The feature vertical spacing. Default value `2`
         ///   - footerActionSpacing: The footer action spacing. Default value `15`
         ///   - footerPrimaryActionButtonCornerRadius: The corner radius of the primary action button. Default value `14`

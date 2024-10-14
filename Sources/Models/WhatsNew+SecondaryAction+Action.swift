@@ -48,7 +48,6 @@ public extension WhatsNew.SecondaryAction.Action {
     /// Open a URL
     /// - Parameters:
     ///   - url: The URL that should be opened
-    ///   - application: The UIApplication used to open the URL. Default value `.shared`
     static func openURL(
         _ url: URL?
     ) -> Self {

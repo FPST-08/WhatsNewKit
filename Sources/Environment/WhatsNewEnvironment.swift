@@ -52,7 +52,7 @@ open class WhatsNewEnvironment {
     ///   - currentVersion: The current WhatsNew Version. Default value `.current()`
     ///   - versionStore: The WhatsNewVersionStore. Default value `UserDefaultsWhatsNewVersionStore()`
     ///   - defaultLayout: The default WhatsNew Layout. Default value `.default`
-    ///   - whatsNewCollection: The WhatsNewCollectionProvider
+    ///   - whatsNewCollectionProvider: The WhatsNewCollectionProvider
     public convenience init(
         currentVersion: WhatsNew.Version = .current(),
         versionStore: WhatsNewVersionStore = UserDefaultsWhatsNewVersionStore(),

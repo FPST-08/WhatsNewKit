@@ -31,7 +31,7 @@ public struct WhatsNew {
     /// - Parameters:
     ///   - version: The Version. Default value `.current()`
     ///   - title: The Title
-    ///   - items: The Features
+    ///   - features: The Features
     ///   - primaryAction: The PrimaryAction. Default value `.init()`
     ///   - secondaryAction: The optional SecondaryAction. Default value `nil`
     ///   - migration: The code block that is run when migrating to that version
