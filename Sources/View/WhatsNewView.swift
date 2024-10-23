@@ -45,7 +45,7 @@ public struct WhatsNewView {
     ///   - whatsNew: The WhatsNew object
     ///   - versionStore: The optional WhatsNewVersionStore. Default value `nil`
     ///   - layout: The WhatsNew Layout. Default value `.default`
-    ///  - action: The action to run when presented
+    ///   - action: The action to run when presented
     public init(
         whatsNew: WhatsNew,
         versionStore: WhatsNewVersionStore? = nil,
