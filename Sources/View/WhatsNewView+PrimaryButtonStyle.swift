@@ -48,7 +48,7 @@ extension WhatsNewView.PrimaryButtonStyle: ButtonStyle {
         .foregroundColor(self.primaryAction.foregroundColor)
         .background(loading ? .gray : self.primaryAction.backgroundColor)
         .cornerRadius(self.layout.footerPrimaryActionButtonCornerRadius)
-        .opacity(loading || configuration.isPressed ? 0.5 : 1)
+        .opacity(loading || configuration.isPressed ? 0.5 : 1)
         .opacity(configuration.isPressed ? 0.5 : 1)
     }
     
